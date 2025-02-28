@@ -9,7 +9,7 @@
         {
             this.simulatedBoard = simulatedBoard;
         }
-
+      
         public Game(Board simulatedBoard1)
         {
             this.simulatedBoard1 = simulatedBoard1;

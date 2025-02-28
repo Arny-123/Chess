@@ -13,17 +13,32 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-
 namespace ChessUI
 {
     /// <summary>
     /// Interaction logic for InGameMenu.xaml
     /// </summary>
-    public partial class InGameMenu : UserControl
+    public partial class StartMenu : UserControl
     {
-        public InGameMenu(GameState gameState)
+        public event Action<Choices> ChoiceSelected;
+        public StartMenu(GameState gameState)
         {
             InitializeComponent();
+        }
+
+        private void Resume_Click(object sender, RoutedEventArgs e)
+        {
+            ChoiceSelected?.Invoke(Choices.Resume);
+        }
+
+        private void Load_Click(object sender, RoutedEventArgs e)
+        {
+            ChoiceSelected?.Invoke(Choices.Load);
+        }
+
+        private void Exit_Click(object sender, RoutedEventArgs e)
+        {
+            ChoiceSelected?.Invoke(Choices.Exit);
         }
     }
 }

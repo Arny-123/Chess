@@ -8,10 +8,10 @@ namespace ChessUI
 {
     public enum Choices
     {
+        Resume,
         Load,
         Save,
         Restart,
         Exit,
-        Continue
     }
 }

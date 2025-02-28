@@ -35,7 +35,11 @@ namespace ChessUI
 
             DrawBoard(gameState.Board);
 
+            StartMenu(); //displays start menu
+
             SetCursor(gameState.CurrentPlayer);
+
+            this.KeyDown += new KeyEventHandler(CheckPause); // enter to pause the game
         }
         private void InitializeBoard()
         {
@@ -168,10 +172,63 @@ namespace ChessUI
         {
             return MenuContainer.Content != null;
         } //returns whether menu is on screen or not
-        private void DisplayMenu()
+        private void StartMenu()
         {
-            InGameMenu inGamemenu = new InGameMenu(gameState);
-
+            StartMenu startMenu = new StartMenu(gameState);
+            MenuContainer.Content = startMenu;
+            startMenu.ChoiceSelected += choice =>
+            {
+                if (choice == Choices.Resume)
+                {
+                    MenuContainer.Content = null;
+                    ResumeGame();
+                }
+                else if (choice == Choices.Load)
+                {
+                    //load logic here
+                }
+                else if (choice == Choices.Exit)
+                {
+                    Application.Current.Shutdown(); //closes application
+                }
+            };
+        }
+        private void CheckPause(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                PauseMenu();
+            }
+        }
+        private void PauseMenu()
+        {
+            PauseMenu pauseMenu = new PauseMenu(gameState);
+            MenuContainer.Content = pauseMenu;
+            pauseMenu.ChoiceSelected += choice =>
+            {
+                if (choice == Choices.Resume)
+                {
+                    MenuContainer.Content = null;
+                    ResumeGame();
+                }
+                else if (choice == Choices.Load)
+                {
+                    //load logic here
+                }
+                else if (choice == Choices.Save)
+                {
+                    //save logic here
+                }
+                else if (choice == Choices.Restart)
+                {
+                    MenuContainer.Content = null;
+                    RestartGame();
+                }
+                else if (choice == Choices.Exit)
+                {
+                    Application.Current.Shutdown(); //closes application
+                }
+            };
         }
         private void DisplayGameOver()
         {
@@ -190,6 +247,13 @@ namespace ChessUI
                 }
             };
         }
+        private void ResumeGame()
+        {
+            /*HideHighlightedCells(); //stops highlighting cells
+            movementCache.Clear(); //clears movement cache*/ //remove l8r? (kept for bugtesting)
+            DrawBoard(gameState.Board);
+            SetCursor(gameState.CurrentPlayer);
+        }
         private void RestartGame()
         {
             HideHighlightedCells(); //stops highlighting cells
@@ -198,5 +262,10 @@ namespace ChessUI
             DrawBoard(gameState.Board);
             SetCursor(gameState.CurrentPlayer);
         } //resets the game to initial layout
+
+        private void InGameMenu_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+
+        }
     }
 }
