@@ -53,9 +53,22 @@ namespace ChessLogic
             if (AbleToMoveTo(board, oneMoveForward))
                 // ^^checks if pawn can move there
             {
-                RegularMove normal = new RegularMove(start, oneMoveForward);
-                yield return normal;
-                // ^^creates a normal move which moves pawn to that position
+
+                if (oneMoveForward.Row == 0 || oneMoveForward.Row == 7)
+                {
+                    foreach (MovementBaseClass promotionMove in PromotionMoves(start, oneMoveForward))
+                    {
+                        yield return promotionMove;
+                    }
+                }
+                else
+                {
+                    RegularMove normal = new RegularMove(start, oneMoveForward);
+                    yield return normal;
+                    // ^^creates a normal move which moves pawn to that position
+                }
+                
+               
 
                 Position twoMovesForward = oneMoveForward + forward; 
                 if (!Moved && AbleToMoveTo(board, twoMovesForward))
@@ -69,11 +82,23 @@ namespace ChessLogic
         {
             foreach (Direction direction in new Direction[] { Direction.West, Direction.East })
             {
-                Position moveTo = start + direction+ forward;
-                // ^^ this position is diagonally infront of Pawn
+                Position moveTo = start + direction + forward;
+                // ^^ this position is diagonally in front of Pawn
                 if (AbleToCapture(board, moveTo))
                 {
-                    yield return new RegularMove(start, moveTo);
+                    if (moveTo.Row == 0 || moveTo.Row == 7)
+                    {
+                        foreach (MovementBaseClass promotionMove in PromotionMoves(start, moveTo))
+                        {
+                            yield return promotionMove;
+                        }
+                    }
+                    else
+                    {
+                        RegularMove normal = new RegularMove(start, moveTo);
+                        yield return normal;
+                        // ^^creates a normal move which moves pawn to that position
+                    }
                 }
             }
         }
@@ -91,5 +116,13 @@ namespace ChessLogic
                 return piece != null && piece.Type == PieceType.King;
             });
         }
+        private static IEnumerable<MovementBaseClass> PromotionMoves(Position start, Position end)
+        {
+            foreach (PieceType newType in new PieceType[] { PieceType.Bishop, PieceType.Knight, PieceType.Rook, PieceType.Queen })
+            {
+                yield return new Pawn_Promotion(start, end, newType);
+            }
+        }
+       
     }
 }

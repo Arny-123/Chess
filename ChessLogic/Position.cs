@@ -8,7 +8,7 @@ namespace ChessLogic
 {
     public class Position
     {
-        public int Row { get; } //inc top -> bottom
+        public int Row { get; set; } //inc top -> bottom
         public int Column { get; } //inc left -> right
 
         public Position(int row, int column)
@@ -70,5 +70,6 @@ namespace ChessLogic
         {
             return new Position(pos.Row +dir.ChangeInRowNum, pos.Column +dir.ChangeInColumnNum);
         }
+       
     }
 }

@@ -116,8 +116,35 @@ namespace ChessUI
 
             if (movementCache.TryGetValue(position, out MovementBaseClass move))
             {
-                HandleMove(move);
+                if (move.Type == MovementType.PawnPromotion)
+                {
+                    HandlePromotion(move.StartingPos, move.EndingPos);
+                }
+                else
+                {
+                    HandleMove(move);
+                }
             }
+
+        }
+        private void HandlePromotion(Position start, Position end)
+        {
+            pieceImages[start.Row, start.Column].Source = null; // Clear the pawn's image from the starting position
+            PawnPromotionMenu pawnPromotionMenu = new PawnPromotionMenu(gameState.CurrentPlayer);
+            MenuContainer.Content = pawnPromotionMenu;
+            pawnPromotionMenu.PromotionChosen += choice =>
+            {
+                MenuContainer.Content = null;
+                MovementBaseClass pawnPromotionMove = new Pawn_Promotion(start, end, choice);
+                gameState.MakeMove(pawnPromotionMove); // Make the move before updating the board
+                DrawBoard(gameState.Board); // Update the board after the move
+                SetCursor(gameState.CurrentPlayer); // Update the cursor for the current player
+
+                if (gameState.GameIsOver())
+                {
+                    DisplayGameOver();
+                }
+            };
         }
 
         private void HandleMove(MovementBaseClass move)
