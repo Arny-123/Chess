@@ -24,7 +24,7 @@ namespace ChessLogic
         public Queen(Player colour)
         {
             Colour = colour;
-        }
+        } //constructor
         public override Piece Copy()
         {
             Queen copy = new Queen(Colour);
@@ -35,7 +35,7 @@ namespace ChessLogic
             }
 
             return copy;
-        }
+        } //makes a new instance of a queen with the same colour as the original queen
         public override IEnumerable<MovementBaseClass> GetMove(Board board, Position start)
         {
             // Get all possible end positions based on the directions
@@ -45,6 +45,6 @@ namespace ChessLogic
             IEnumerable<MovementBaseClass> moves = (IEnumerable<MovementBaseClass>)endPositions.Select(end => new RegularMove(start, end));
 
             return moves;
-        }
+        } //returns all the moves that the queen can make
     }
 }

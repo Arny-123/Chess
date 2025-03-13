@@ -30,39 +30,39 @@
             <Button Grid.Row="1"
                     Content="RESUME"
                     Style="{StaticResource ButtonStyle}"
-                    Width="80"
-                    Height="30"
+                    Width="100"
+                    Height="50"
                     Click="Resume_Click" />
 
             <Button Grid.Row="1"
                     Grid.Column="1"
                     Content="RESTART"
                     Style="{StaticResource ButtonStyle}"
-                    Width="80"
-                    Height="30"
+                    Width="100"
+                    Height="50"
                     Click="Restart_Click" />
             
             <Button Grid.Row="2"
                     Content="LOAD"
                     Style="{StaticResource ButtonStyle}"
-                    Width="80"
-                    Height="30"
+                    Width="100"
+                    Height="50"
                     Click="Load_Click" />
 
             <Button Grid.Row="2"
-                    Content="SAVE"
+                    Content="SAVE AND EXIT"
                     Grid.Column="1"
                     Style="{StaticResource ButtonStyle}"
-                    Width="80"
-                    Height="30"
+                    Width="100"
+                    Height="50"
                     Click="Save_Click" />
             
             <Button Grid.Row="3"
                     Grid.ColumnSpan="2"
                     Content="EXIT"
                     Style="{StaticResource ButtonStyle}"
-                    Width="80"
-                    Height="30"
+                    Width="100"
+                    Height="50"
                     Click="Exit_Click"/>
         </Grid>
 

@@ -33,11 +33,11 @@ namespace ChessLogic
             }
 
             return copy;
-        }
+        } //makes a new instance of a pawn with the same colour as the original pawn
         private static bool AbleToMoveTo(Board board, Position position)
         {
             return Board.IsInside(position) && board.IsEmpty(position);
-        }
+        } //checks if the pawn can move to a certain position
         private bool AbleToCapture(Board board, Position position)
         {
             if (!Board.IsInside(position) || board.IsEmpty(position))
@@ -45,26 +45,26 @@ namespace ChessLogic
                 return false;
             }
             return board[position].Colour != Colour;
-        }
+        } //checks if the pawn can capture a piece at a certain position
         private IEnumerable<MovementBaseClass> MoveForward(Board board,Position start)
-            // ^^returns all forward or non capturing moves that the pawn can make
         {
             Position oneMoveForward = start + forward; //space directly infront of pawn
+            
             if (AbleToMoveTo(board, oneMoveForward))
                 // ^^checks if pawn can move there
             {
 
-                if (oneMoveForward.Row == 0 || oneMoveForward.Row == 7)
+                if (Position.IsOnLastRow(oneMoveForward, Colour)) //if pawn reaches the end of the board
                 {
-                    foreach (MovementBaseClass promotionMove in PromotionMoves(start, oneMoveForward))
+                    foreach (MovementBaseClass promotionMove in PromotionMoves(start, oneMoveForward)) //promote pawn
                     {
-                        yield return promotionMove;
+                        yield return promotionMove; //return the promotion move
                     }
                 }
                 else
                 {
-                    RegularMove normal = new RegularMove(start, oneMoveForward);
-                    yield return normal;
+                    RegularMove normal = new RegularMove(start, oneMoveForward); 
+                    yield return normal; 
                     // ^^creates a normal move which moves pawn to that position
                 }
                 
@@ -77,7 +77,7 @@ namespace ChessLogic
                     yield return new RegularMove(start, twoMovesForward);
                 }
             }
-        }
+        } // returns all forward or non capturing moves that the pawn can make
         private IEnumerable<MovementBaseClass> DiagonalCapture(Board board, Position start)
         {
             foreach (Direction direction in new Direction[] { Direction.West, Direction.East })
@@ -86,11 +86,11 @@ namespace ChessLogic
                 // ^^ this position is diagonally in front of Pawn
                 if (AbleToCapture(board, moveTo))
                 {
-                    if (moveTo.Row == 0 || moveTo.Row == 7)
+                    if (Position.IsOnLastRow(moveTo, Colour)) //if pawn reaches the end of the board
                     {
-                        foreach (MovementBaseClass promotionMove in PromotionMoves(start, moveTo))
+                        foreach (MovementBaseClass promotionMove in PromotionMoves(start, moveTo)) //promote pawn
                         {
-                            yield return promotionMove;
+                            yield return promotionMove; //return the promotion move
                         }
                     }
                     else
@@ -101,12 +101,12 @@ namespace ChessLogic
                     }
                 }
             }
-        }
+        } //returns all diagonal capturing moves that the pawn can make
         public override IEnumerable<MovementBaseClass> GetMove(Board board, Position start)
             // ^^return legal forward moves
         {
             return MoveForward(board, start).Concat(DiagonalCapture(board, start));
-        }
+        } //returns all the moves that the pawn can make
 
         public override bool AbleToCaptureOpponentsKing(Position start, Board board)
         {
@@ -115,14 +115,14 @@ namespace ChessLogic
                 Piece piece = board[move.EndingPos];
                 return piece != null && piece.Type == PieceType.King;
             });
-        }
+        } //checks if the pawn can capture the opponents king
         private static IEnumerable<MovementBaseClass> PromotionMoves(Position start, Position end)
         {
             foreach (PieceType newType in new PieceType[] { PieceType.Bishop, PieceType.Knight, PieceType.Rook, PieceType.Queen })
             {
                 yield return new Pawn_Promotion(start, end, newType);
             }
-        }
-       
+        } //returns all possible promotion moves
+
     }
 }

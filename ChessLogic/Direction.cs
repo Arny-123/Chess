@@ -27,14 +27,14 @@ namespace ChessLogic
         } 
 
         //'overwriting' the plus and multiply commands to increase efficiency later on for piece movements
-        public static Direction operator + (Direction dir1, Direction dir2)
+        public static Direction operator + (Direction dir1, Direction dir2) //overloading the + operator
         {
             return new Direction(dir1.ChangeInRowNum + dir2.ChangeInRowNum, dir1.ChangeInColumnNum + dir2.ChangeInColumnNum);
-        }
+        } 
 
         public static Direction operator * (int scalar, Direction dir)
         {
             return new Direction (scalar * dir.ChangeInRowNum, scalar * dir.ChangeInColumnNum);
-        }
+        } //overloading the * operator
     }
 }

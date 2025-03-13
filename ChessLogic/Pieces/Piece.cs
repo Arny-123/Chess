@@ -59,8 +59,8 @@ namespace ChessLogic
                 Piece piece = board[move.EndingPos];
                 return piece != null && piece.Type == PieceType.King;
             });
-            
-            
-        }
+
+
+        } //checks if the piece can capture the opponents king
     }
 }

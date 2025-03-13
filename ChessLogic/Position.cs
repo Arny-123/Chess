@@ -52,24 +52,38 @@ namespace ChessLogic
                 int hash = 17; //using prime numbers reduces chances of hash collisions.
                 hash = hash * 23 + CustomHash(Row); 
                 hash = hash * 23 + CustomHash(Column); 
-                return hash;
+                return hash; //returns to cache for movement
             }
         }
-        
+       
         public static bool operator ==(Position left, Position right)
         {
             return EqualityComparer<Position>.Default.Equals(left, right);
-        }
+        }// Overload the inequality operator to compare two Position objects
+
 
         public static bool operator !=(Position left, Position right)
         {
             return !(left == right);
+        }// Overload the inequality operator to compare two Position objects
+
+       
+        public static Position operator +(Position pos, Direction dir) // Overload the addition operator to add a Direction to a Position
+        {
+            return new Position(pos.Row + dir.ChangeInRowNum, pos.Column + dir.ChangeInColumnNum);
+        }
+        public static bool IsOnLastRow(Position position, Player colour)
+        {
+            if (colour == Player.White)
+            {
+                return position.Row == 0;
+            }
+            else if (colour == Player.Black)
+            {
+                return position.Row == 7;
+            }
+            return false;
         }
 
-        public static Position operator +(Position pos,Direction dir)
-        {
-            return new Position(pos.Row +dir.ChangeInRowNum, pos.Column +dir.ChangeInColumnNum);
-        }
-       
     }
 }

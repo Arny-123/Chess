@@ -13,7 +13,7 @@ namespace ChessLogic
         public override Position EndingPos { get; }
         private readonly Position rookStart;
         private readonly Position rookEnd;
-        public Castling(Position kingStart, Position kingEnd, Position rookStart, Position rookEnd)
+        public Castling(Position kingStart, Position kingEnd, Position rookStart, Position rookEnd) 
         {
             StartingPos = kingStart;
             EndingPos = kingEnd;

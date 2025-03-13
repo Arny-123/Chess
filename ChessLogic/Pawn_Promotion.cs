@@ -12,13 +12,17 @@ namespace ChessLogic
         public override Position StartingPos { get; }
         public override Position EndingPos { get; }
         private readonly PieceType newType;
+
+        // Constructor to initialize the starting position, ending position, and the new piece type
         public Pawn_Promotion(Position start, Position end, PieceType newType)
         {
             StartingPos = start;
             EndingPos = end;
             this.newType = newType;
         }
-        private Piece CreatePieceToPromote(Player colour)
+
+        
+        private Piece CreatePieceToPromote(Player colour)// Method to create the piece to which the pawn will be promoted to
         {
             return newType switch
             {
@@ -28,6 +32,8 @@ namespace ChessLogic
                 _ => new Queen(colour),
             };
         }
+
+        
         public override void ApplyMove(Board board)
         {
             Piece pawn = board[StartingPos];
@@ -36,7 +42,6 @@ namespace ChessLogic
             Piece pieceToPromote = CreatePieceToPromote(pawn.Colour);
             pieceToPromote.MarkAsMoved();
             board[EndingPos] = pieceToPromote; // Place the promoted piece on the ending position
-        }
- 
+        }// Method to apply the pawn promotion move on the board
     }
 }

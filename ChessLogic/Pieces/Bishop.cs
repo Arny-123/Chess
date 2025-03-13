@@ -17,7 +17,7 @@ namespace ChessLogic
             Direction.SouthWest,
             Direction.NorthEast,
             Direction.NorthWest,
-        };
+        }; //array of directions the bishop can move in
         public Bishop(Player colour) //constructor
         {
             Colour = colour;
@@ -42,8 +42,7 @@ namespace ChessLogic
                 RegularMove move = new RegularMove(start, end);//create a new move from the start position to the end position
                 possibleMoves.Add(move);//add the move to the list of possible moves
             }
-            //return list of possible moves
             return possibleMoves;
-        }
+        } //returns all the moves that the bishop can make
     }
 }

@@ -20,11 +20,11 @@ namespace ChessLogic
             Direction.SouthEast,
             Direction.NorthWest,
             Direction.SouthWest,
-        };
+        }; //array of directions the king can move in
         public King(Player colour)
         {
             Colour = colour;
-        }
+        } //constructor
         public override Piece Copy()
         {
             King copy = new King(Colour);
@@ -35,7 +35,7 @@ namespace ChessLogic
             }
 
             return copy;
-        }
+        } //makes a new instance of a king with the same colour as the original king
         private IEnumerable<Position> MovePositions(Board board, Position start)
         {
             foreach (Direction directions in directions)
@@ -51,14 +51,14 @@ namespace ChessLogic
                     yield return end;
                 }
             }
-        }
+        } //find valid positions the king can move to
         public override IEnumerable<MovementBaseClass> GetMove(Board board, Position start)
         {
             foreach (Position end in MovePositions(board,start)) 
             {
                 yield return new RegularMove(start, end);
             }
-        }
+        } //returns all the moves that the king can make
         public override bool AbleToCaptureOpponentsKing(Position start, Board board)
         {
             return MovePositions(board, start).Any(end =>
@@ -66,6 +66,6 @@ namespace ChessLogic
                 Piece piece = board[end];
                 return piece != null && piece.Type == PieceType.King;
             });
-        }
+        } //checks if the king can capture the opponent's king
     }
 }

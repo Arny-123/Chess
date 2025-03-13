@@ -32,7 +32,7 @@ namespace ChessLogic
             }
 
             return copy;
-        }
+        } //makes a new instance of a rook with the same colour as the original rook
         public override IEnumerable<MovementBaseClass> GetMove(Board board, Position start)
         {
             // Get all possible end positions based on the directions
@@ -42,6 +42,6 @@ namespace ChessLogic
             IEnumerable<MovementBaseClass> moves = (IEnumerable<MovementBaseClass>)endPositions.Select(end => new RegularMove(start, end));
 
             return moves;
-        }
+        } //returns all the moves that the rook can make
     }
 }

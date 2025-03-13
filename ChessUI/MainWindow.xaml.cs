@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -100,7 +102,7 @@ namespace ChessUI
 
         private void SelectedStartPosition(Position position)
         {
-            IEnumerable<MovementBaseClass> moves = gameState.LegalMoves(position); 
+            IEnumerable<MovementBaseClass> moves = gameState.LegalMoves(position, 1);
             if (moves.Any())
             {
                 selectedPosition = position;
@@ -164,7 +166,7 @@ namespace ChessUI
 
             foreach (MovementBaseClass move in moves)
             {
-                movementCache[move.EndingPos] = move;
+                movementCache[move.EndingPos] = move; //hashcode returned to here
             }
         } //temporary  memory to store movements of copied board
 
@@ -210,21 +212,31 @@ namespace ChessUI
                     MenuContainer.Content = null;
                     ResumeGame();
                 }
+
                 else if (choice == Choices.Load)
                 {
-                    //load logic here
+
+                    DisplaySavedGame();
                 }
+
                 else if (choice == Choices.Exit)
                 {
                     Application.Current.Shutdown(); //closes application
                 }
             };
-        }
+        } 
         private void CheckPause(object sender, System.Windows.Input.KeyEventArgs e)
         {
             if (e.Key == Key.Enter)
             {
                 PauseMenu();
+            }
+        }
+        private void CheckUndo(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            if (e.Key == Key.U)
+            {
+                undoMove();
             }
         }
         private void PauseMenu()
@@ -238,19 +250,31 @@ namespace ChessUI
                     MenuContainer.Content = null;
                     ResumeGame();
                 }
+
                 else if (choice == Choices.Load)
                 {
-                    //load logic here
+                    DisplaySavedGame();
                 }
+
                 else if (choice == Choices.Save)
                 {
-                    //save logic here
+                    Board BoardToSave = gameState.Board.Copy();
+                    string SaveLog = $"{gameState.CurrentPlayer}";//Saves the current player so that they can take their turn when the game loads again.
+                    // Saves board as a list of coordinates and piece types.
+                    foreach (Position position in BoardToSave.PositionsOfPiece())
+                    {
+                        SaveLog += $"\n{position.Row} | {position.Column} | {BoardToSave[position].Type} | {BoardToSave[position].Colour}";
+                    }
+                    File.WriteAllText("LastGame.sav", SaveLog);
+                    Application.Current.Shutdown();
                 }
+
                 else if (choice == Choices.Restart)
                 {
                     MenuContainer.Content = null;
                     RestartGame();
                 }
+
                 else if (choice == Choices.Exit)
                 {
                     Application.Current.Shutdown(); //closes application
@@ -281,18 +305,85 @@ namespace ChessUI
             DrawBoard(gameState.Board);
             SetCursor(gameState.CurrentPlayer);
         }
-        private void RestartGame()
+        private void RestartGame(Player player = Player.White, Board board = null)
         {
+            if (board == null)
+            {
+                board = Board.Initially();
+                movementCache.Clear(); //clears movement cache
+            }
             HideHighlightedCells(); //stops highlighting cells
-            movementCache.Clear(); //clears movement cache
-            gameState = new GameState(Player.White,Board.Initially());
+            gameState = new GameState(player, (Board)board);
             DrawBoard(gameState.Board);
             SetCursor(gameState.CurrentPlayer);
         } //resets the game to initial layout
 
-        private void InGameMenu_MouseDown(object sender, MouseButtonEventArgs e)
+        private void InGameMenu_MouseDown(object sender, MouseButtonEventArgs e) 
         {
 
         }
+        private void DisplaySavedGame()
+        {
+            if (File.Exists("LastGame.sav"))
+            {
+                Board BoardToLoad = new Board();
+                string RawLoadLog = File.ReadAllText("LastGame.sav");
+                string[] RawLoadedArray = RawLoadLog.Split("\n");
+                List<string> LoadedPieceList = RawLoadedArray.ToList();
+                LoadedPieceList.RemoveAt(0);
+                string[] LoadedPieceArray = LoadedPieceList.ToArray();
+                foreach (string CurrentPieceData in LoadedPieceArray)
+                {
+                    string[] CurrentPieceArray = CurrentPieceData.Split(" | ");
+                    Dictionary<string, Type> PieceTypes = new Dictionary<string, Type>
+                    {
+                        { "Pawn", typeof(Pawn) },
+                        { "Bishop", typeof(Bishop) },
+                        { "Knight", typeof(Knight) },
+                        { "Rook", typeof(Rook) },
+                        { "Queen", typeof(Queen) },
+                        { "King", typeof(King) }
+                    };
+                    Position CurrentPiecePosition = new Position(Convert.ToInt32(CurrentPieceArray[0]), Convert.ToInt32(CurrentPieceArray[1]));
+                    string CurrentPieceType = CurrentPieceArray[2];
+                    Player CurrentPieceColour;
+                    Player.TryParse<Player>(CurrentPieceArray[3].ToString(), out CurrentPieceColour);
+                    BoardToLoad[CurrentPiecePosition] = (Piece)Activator.CreateInstance(PieceTypes[CurrentPieceType], CurrentPieceColour);
+                }
+                Player NextPlayer;
+                switch (RawLoadedArray[0])
+                {
+                    case "White":
+                        NextPlayer = Player.White;
+                        break;
+                    case "Black":
+                        NextPlayer = Player.Black;
+                        break;
+                    default:
+                        NextPlayer = Player.White;
+                        break;
+                }
+                RestartGame(NextPlayer, BoardToLoad);
+            }
+            else
+            {
+                MessageBox.Show("No saved game found.");
+            }
+            MenuContainer.Content = null;
+            ResumeGame();
+        }
+        private void undoMove()
+        {
+            if (gameState.MoveHistory.Any())
+            {
+                MovementBaseClass lastMove = gameState.MoveHistory.Last();
+                gameState.undoMove(lastMove);
+                DrawBoard(gameState.Board);
+                SetCursor(gameState.CurrentPlayer);
+
+           
+            }
+        }
+
     }
 }

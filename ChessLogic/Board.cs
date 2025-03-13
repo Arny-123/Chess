@@ -14,14 +14,14 @@ namespace ChessLogic
         {
             get { return pieces[row, column]; }
             set { pieces[row, column] = value; }
-        }
+        } 
         public Piece this[Position position]
         {
             get { return this[position.Row, position.Column]; }
             set { this[position.Row, position.Column] = value; }
         }
 
-        public static Board Initially()//initialises board
+        public static Board Initially() //creates a new board at the beginning of the game
         {
             Board board = new Board();
             board.AddInitialPieces();

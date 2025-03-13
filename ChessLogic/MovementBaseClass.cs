@@ -14,11 +14,11 @@ namespace ChessLogic
 
         public abstract void ApplyMove(Board board); //general function to apply move to a piece either on simulated board or actual board
         //overriden
-        public virtual bool Legal(Board board) 
+        public virtual bool Legal(Board board)  
         //virtual so that child classes can override as they may require additional conditions such as castling etc.
         {
             return IsMoveLegal(board, StartingPos);
-        }
+        } 
         private bool IsMoveLegal(Board board, Position startingPos)
         {
             Player currentPlayer = board[startingPos].Colour;
