@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -8,32 +9,59 @@ namespace ChessLogic
 {
     public class Castling : MovementBaseClass
     {
-        public override MovementType Type => MovementType.CastleKing;
+        public override MovementType Type { get; }
         public override Position StartingPos { get; }
         public override Position EndingPos { get; }
-        private readonly Position rookStart;
-        private readonly Position rookEnd;
-        public Castling(Position kingStart, Position kingEnd, Position rookStart, Position rookEnd) 
+        private readonly Direction KingMovement;
+        private readonly Position RookStartingPosition;
+        private readonly Position RookEndingPosition;
+        public Castling(MovementType type, Position KingPosition)
         {
-            StartingPos = kingStart;
-            EndingPos = kingEnd;
-            this.rookStart = rookStart;
-            this.rookEnd = rookEnd;
+            Type = type;
+            StartingPos = KingPosition;
+
+            if (type == MovementType.CastleKing)
+            {
+                EndingPos = new Position(KingPosition.Row, KingPosition.Column + 2);
+                KingMovement = Direction.East;
+                RookStartingPosition = new Position(KingPosition.Row, 7);
+                RookEndingPosition = new Position(KingPosition.Row, 5);
+            }
+            else
+            {
+                EndingPos = new Position(KingPosition.Row, KingPosition.Column - 2);
+                KingMovement = Direction.West;
+                RookStartingPosition = new Position(KingPosition.Row, 0);
+                RookEndingPosition = new Position(KingPosition.Row, 3);
+            }
         }
-        public override void ApplyMove(Board board)
+        public override bool ApplyMove(Board board)
         {
-            Piece king = board[StartingPos];
-            Piece rook = board[rookStart];
-            board[StartingPos] = null; // Remove the king from its starting position
-            board[EndingPos] = null; // Clear the ending position
-            board[rookStart] = null; // Remove the rook from its starting position
-            board[rookEnd] = null; // Clear the ending position
-            king.MarkAsMoved();
-            rook.MarkAsMoved();
-            board[EndingPos] = king; // Place the king on the ending position
-            board[rookEnd] = rook; // Place the rook on the ending position
+            new RegularMove(StartingPos, EndingPos).ApplyMove(board);
+            new RegularMove(RookStartingPosition, RookEndingPosition).ApplyMove(board);
+            return false;
         }
+        public override bool Legal(Board board)
+        {
+            Player player = board[StartingPos].Colour;
+            if (board.InCheck(player))
+            {
+                return false;
+            }
+            Board boardCopy = board.Copy();
+            Position copiedKingPosition = StartingPos;
+            for (int i = 0; i < 2; i++)
+            {
+                new RegularMove(copiedKingPosition, copiedKingPosition + KingMovement).ApplyMove(boardCopy);
+                copiedKingPosition += KingMovement;
+                if (boardCopy.InCheck(player))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+
     }
-    
-    
 }

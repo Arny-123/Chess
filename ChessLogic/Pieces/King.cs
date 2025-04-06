@@ -25,6 +25,7 @@ namespace ChessLogic
         {
             Colour = colour;
         } //constructor
+       
         public override Piece Copy()
         {
             King copy = new King(Colour);
@@ -58,6 +59,14 @@ namespace ChessLogic
             {
                 yield return new RegularMove(start, end);
             }
+            if (AbleToCastleOnKingSide(start, board))
+            {
+                yield return new Castling(MovementType.CastleKing,start);
+            }
+            if (AbleToCastleOnQueenSide(start, board))
+            {
+                yield return new Castling(MovementType.CastleQueen,start);
+            }
         } //returns all the moves that the king can make
         public override bool AbleToCaptureOpponentsKing(Position start, Board board)
         {
@@ -67,5 +76,50 @@ namespace ChessLogic
                 return piece != null && piece.Type == PieceType.King;
             });
         } //checks if the king can capture the opponent's king
+        private static bool RookNotMoved(Board board, Position position)
+        {
+            if (board.IsEmpty(position))
+            {
+                return false;
+            }
+            Piece piece = board[position];
+            return piece.Type == PieceType.Rook && !piece.Moved;
+        } //checks if the rook has moved
+        private static bool EmptySpacesBetween(IEnumerable<Position> positions, Board board)
+        {
+            return positions.All(position => board.IsEmpty(position));
+        }
+        private bool AbleToCastleOnKingSide(Position start, Board board)
+        {
+            if (Moved)
+            {
+                return false;
+            }
+            Position rookPosition = new Position(start.Row, 7);
+            Position[] positionsInBetween = new Position[]
+            {
+                new Position(start.Row, 5),
+                new Position(start.Row, 6),
+            };
+            return RookNotMoved(board, rookPosition) && EmptySpacesBetween(positionsInBetween, board);
+            // Additional logic for castling on the king side
+        }
+        private bool AbleToCastleOnQueenSide(Position start, Board board)
+        {
+            if (Moved)
+            {
+                return false;
+            }
+            Position rookPosition = new Position(start.Row, 0);
+            Position[] positionsInBetween = new Position[]
+            {
+                new Position(start.Row, 1),
+                new Position(start.Row, 2),
+                new Position(start.Row, 3),
+            };
+            return RookNotMoved(board, rookPosition) && EmptySpacesBetween(positionsInBetween, board);
+            // Additional logic for castling on the queen side
+        }
+
     }
 }

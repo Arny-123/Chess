@@ -34,7 +34,7 @@ namespace ChessLogic
         }
 
         
-        public override void ApplyMove(Board board)
+        public override bool ApplyMove(Board board)
         {
             Piece pawn = board[StartingPos];
             board[StartingPos] = null; // Remove the pawn from its starting position
@@ -42,6 +42,7 @@ namespace ChessLogic
             Piece pieceToPromote = CreatePieceToPromote(pawn.Colour);
             pieceToPromote.MarkAsMoved();
             board[EndingPos] = pieceToPromote; // Place the promoted piece on the ending position
+            return true;
         }// Method to apply the pawn promotion move on the board
     }
 }

@@ -12,7 +12,7 @@ namespace ChessLogic
         public abstract Position StartingPos { get; } //pieces move from here
         public abstract Position EndingPos { get; } //pieces move to here
 
-        public abstract void ApplyMove(Board board); //general function to apply move to a piece either on simulated board or actual board
+        public abstract bool ApplyMove(Board board); //general function to apply move to a piece either on simulated board or actual board
         //overriden
         public virtual bool Legal(Board board)  
         //virtual so that child classes can override as they may require additional conditions such as castling etc.

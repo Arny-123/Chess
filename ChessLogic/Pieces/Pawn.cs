@@ -84,7 +84,12 @@ namespace ChessLogic
             {
                 Position moveTo = start + direction + forward;
                 // ^^ this position is diagonally in front of Pawn
-                if (AbleToCapture(board, moveTo))
+                //Position enPassantTarget = board.RetrievePawnJumpPositions(Colour.Opponent());
+                if (moveTo == board.RetrievePawnJumpPositions(Colour.Opponent()))
+                {
+                    yield return new EnPassant(start, moveTo);
+                }
+                else if (AbleToCapture(board, moveTo))
                 {
                     if (Position.IsOnLastRow(moveTo, Colour)) //if pawn reaches the end of the board
                     {

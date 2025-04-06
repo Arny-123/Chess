@@ -16,11 +16,11 @@ namespace ChessLogic
             StartingPos = start;
             EndingPos = end;
         }
-        public override void ApplyMove(Board board) //makes the move happen
+        public override bool ApplyMove(Board board) //makes the move happen
         {
             //retrieve the piece from the starting position
             Piece movingPiece = board[StartingPos];
-
+            bool capture = !board.IsEmpty(EndingPos); //check if the ending position is empty or not
             //update the board with the new positions
             board[EndingPos] = movingPiece; 
             board[StartingPos] = null;
@@ -30,6 +30,7 @@ namespace ChessLogic
             {
                 movingPiece.MarkAsMoved();
             }
+            return capture || movingPiece.Type == PieceType.Pawn; //return true if the move was a capture or if the piece is a pawn
         }
     }
 }

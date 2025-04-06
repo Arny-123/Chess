@@ -232,13 +232,13 @@ namespace ChessUI
                 PauseMenu();
             }
         }
-        private void CheckUndo(object sender, System.Windows.Input.KeyEventArgs e)
+        /*private void CheckUndo(object sender, System.Windows.Input.KeyEventArgs e)
         {
             if (e.Key == Key.U)
             {
                 undoMove();
             }
-        }
+        }*/
         private void PauseMenu()
         {
             PauseMenu pauseMenu = new PauseMenu(gameState);
@@ -372,7 +372,7 @@ namespace ChessUI
             MenuContainer.Content = null;
             ResumeGame();
         }
-        private void undoMove()
+        /*private void undoMove()
         {
             if (gameState.MoveHistory.Any())
             {
@@ -383,7 +383,7 @@ namespace ChessUI
 
            
             }
-        }
+        }*/
 
     }
 }

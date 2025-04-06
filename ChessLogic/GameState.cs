@@ -11,18 +11,36 @@ namespace ChessLogic
         public Board Board { get; }
         public Player CurrentPlayer { get; private set; } 
         public GameOver GameOver { get; private set; } = null;
+        private int NoCapturesOrPawnMovements = 0; //used to check for fifty move rule
+        private string stateString;
+        private readonly Dictionary<string, int> HistoryOfStates = new Dictionary<string, int>();
+
         public GameState (Player player, Board board) //constructor
         {
             CurrentPlayer = player;
             Board = board;
-        }
+            stateString = new StateString(CurrentPlayer,board).ToString();
+            HistoryOfStates[stateString] = 1; //initialize the state string with 1
+        }   
         public List<MovementBaseClass> MoveHistory { get; private set; } = new List<MovementBaseClass>();
         public void MakeMove (MovementBaseClass move) 
+
         {
-            move.ApplyMove(Board);
+            Board.SetPawnJumpPositions(CurrentPlayer, null);
+            bool captureOrPawn = move.ApplyMove(Board);
+            if (captureOrPawn)
+            {
+                NoCapturesOrPawnMovements = 0; //reset the counter if a capture or pawn movement is made
+                HistoryOfStates.Clear();
+            }
+            else
+            {
+                NoCapturesOrPawnMovements++;
+            }
             CurrentPlayer = CurrentPlayer.Opponent();
+            UpdateStateString(); //update the state string with the current state of the game
             CheckForGameOver(); //need to check if the game has ended after every move.
-            MoveHistory.Add(move); //add the move to the move history
+           // MoveHistory.Add(move); //add the move to the move history
         }
         public IEnumerable<MovementBaseClass> LegalMovesFor (Player player)
         {
@@ -44,9 +62,19 @@ namespace ChessLogic
                 else
                 {
                     GameOver = GameOver.Draw(GameOverReason.Stalemate); //its a draw due to stalemate
-                    //ONLY FOR STALEMATE AT THE MOMENT
-                    //WILL NEED TO CHANGE FOR OTHER GAME OVER REASONS
                 }
+            }
+            else if(Board.InsufficientMaterial())
+            {
+                 GameOver = GameOver.Draw(GameOverReason.InsufficientMaterial);
+            }
+            else if (IsFiftyMoveRuleApplicable())
+            {
+                GameOver = GameOver.Draw(GameOverReason.FiftyMoveRule);
+            }
+            else if (ThreeFoldRepetition())
+            {
+                GameOver = GameOver.Draw(GameOverReason.ThreefoldRepetition);
             }
         }
         public bool GameIsOver() //returns whether game is over or not
@@ -91,7 +119,7 @@ namespace ChessLogic
 
             return legalMoves;
         }
-        public void undoMove(MovementBaseClass move) //undo the move
+       /* public void undoMove(MovementBaseClass move) //undo the move
         {
             move.ApplyMove(Board);
             CurrentPlayer = CurrentPlayer.Opponent();
@@ -105,7 +133,7 @@ namespace ChessLogic
                 Console.WriteLine(move);
             }
         }
-        public void UndoLastMove()
+       /* public void UndoLastMove()
         {
             if (MoveHistory.Count > 0)
             {
@@ -116,6 +144,28 @@ namespace ChessLogic
                 Board[lastMove.Start] = Board[lastMove.End]; // Move piece back
                 Board[lastMove.End] = lastMove.CapturedPiece; // Restore captured piece, if any
             } 
+        }*/
+        private bool IsFiftyMoveRuleApplicable()
+        {
+            int fullMoves = NoCapturesOrPawnMovements /2; //each player has made a move
+            return fullMoves ==50 ; //if no captures or pawn movements have been made in the last 50 moves
+        }
+        private void UpdateStateString()
+        {
+            stateString = new StateString(CurrentPlayer, Board).ToString();
+            if (HistoryOfStates.ContainsKey(stateString))
+            {
+                HistoryOfStates[stateString]++;
+            }
+            else
+            {
+                HistoryOfStates[stateString] = 1;
+            }
+
+        } //updates the state string with the current state of the game
+        private bool ThreeFoldRepetition()
+        {
+            return HistoryOfStates[stateString] == 3; //if the state string has been seen 3 times, its a draw
         }
     }
     

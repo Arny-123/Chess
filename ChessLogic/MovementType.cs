@@ -11,7 +11,7 @@ namespace ChessLogic
         Normal,
         CastleKing,
         CastleQueen,
-        Pawndouble,
+        PawnDoubleMove,
         EnPassant,
         PawnPromotion
     }
